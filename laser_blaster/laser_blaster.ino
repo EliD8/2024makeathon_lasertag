@@ -47,9 +47,11 @@ unsigned long previousMillis = 0; // will store last time LED was updated
 unsigned long previousMillis_Trigger = 0; // will store last time trigger was used
 const long interval = 400;
 bool triggerActive = false;
+
+//cooldown after getting hit 
 const int hitCooldown = 1000;
 int gameMode = 1;
-int lives = 5;
+int lives = 99;
 
 
 
@@ -99,12 +101,16 @@ void gameMode1(){
     if (voltage >= thresholdValue && currentMillis - previousMillis >= hitCooldown) {
       previousMillis = currentMillis;
       Serial.println("Hit!"); // Print a message indicating threshold reached
+      Serial.println(sensorValue);
+      Serial.println(voltage);
+      hit_routine(); //stun for 5s
       hitNoise();
       lives--;
       Serial.println("Lives: " + String(lives));
       displayLives();
     }
 
+    //Check if we're firing 
     int trigState = digitalRead(TRIGGER_PIN);
     if (trigState != prevTrigState){
       prevTrigState = trigState;
@@ -134,8 +140,7 @@ void gameMode1(){
 //}
 
 void hitNoise(){
-  tone(SPEAKER_PIN, 1000, 500); // Play tone at 1000 Hz for 500 ms
-  tone(SPEAKER_PIN, 700, 200); // Play tone at 700 Hz for 200 ms
+  tone(SPEAKER_PIN, 1000, 2000); // Play tone at 1000 Hz for 500 ms
 }
 
 void shootNoise(){
@@ -146,9 +151,57 @@ void gameOverNoise(){
   tone(SPEAKER_PIN, 1000, 5000);
 }
 
+void hit_routine(){
+  //on hit, get stunned for 10 s and count down 
+  //HIT HIT HITfor 2seconds
+  for (int i = 10; i > 0; i--){
+    display.clearDisplay();
+  display.setTextSize(5); 
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0,0);     // Start at top-left corner
+  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+  display.println("HIT");
+  display.display();
+  delay(100);
+
+  //ALL WHITE
+  display.fillScreen(WHITE);
+  display.display();
+  tone(SPEAKER_PIN,500, 500);
+  delay(100);
+  noTone(SPEAKER_PIN);
+  }
+
+  //COUNT DOWN FROM 8
+    for (int i = 8; i > 3; i--){
+    display.clearDisplay();
+    display.setTextSize(5); 
+    display.setTextColor(WHITE); // Draw white text
+    display.setCursor(0,0);     // Start at top-left corner
+    display.cp437(true);         // Use full 256 char 'Code Page 437' font
+    display.println(i);
+    display.display();
+    tone(SPEAKER_PIN, 200, 500);
+    delay(1000);
+  }
+
+  //Last 3
+  for (int i = 3; i > 0; i--){
+    display.clearDisplay();
+    display.setTextSize(5); 
+    display.setTextColor(WHITE); // Draw white text
+    display.setCursor(0,0);     // Start at top-left corner
+    display.cp437(true);         // Use full 256 char 'Code Page 437' font
+    display.println(i);
+    display.display();
+    tone(SPEAKER_PIN, 500, 1000);
+    delay(1000);
+  }
+}
+
 void displayLives(){
   display.clearDisplay();
-  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextSize(4);      // Normal 1:1 pixel scale
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
