@@ -44,6 +44,8 @@ static const unsigned char PROGMEM logo_bmp[] =
 const int analogPin = LASER_SENSOR_PIN; // Analog pin to read from
 const int thresholdValue = 2; // Specified threshold value
 unsigned long previousMillis = 0; // will store last time LED was updated
+const long interval = 400;
+bool triggerActive = false;
 const int hitCooldown = 1000;
 int gameMode = 1;
 int lives = 5;
@@ -103,17 +105,20 @@ void gameMode1(){
     int trigState = digitalRead(TRIGGER_PIN);
     if (trigState != prevTrigState){
       prevTrigState = trigState;
-      if (trigState == HIGH){
+      if (trigState == LOW && !triggerActive){
+        triggerActive = true;
         Serial.println("FIRE!");
         shootNoise();
         digitalWrite(LASER_PIN, HIGH);
-      } else{
+        previousMillis = currentMillis;
+      } else if (triggerActive && currentMillis - previousMillis >= interval){
+        triggerActive = false;
         digitalWrite(LASER_PIN, LOW);
       }
-    } else{
+    } else if (triggerActive && currentMillis - previousMillis >= interval){
+      triggerActive = false;
       digitalWrite(LASER_PIN, LOW);
     }
-
   }
 
   Serial.println("Game Over");
@@ -149,4 +154,3 @@ void displayLives(){
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
   display.write("Lives: " + String(lives));
 }
-```
