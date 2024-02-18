@@ -86,6 +86,7 @@ void loop(){
   //
 }
 void gameMode1(){
+  displayLives();
   int prevTrigState = digitalRead(TRIGGER_PIN);
   while(lives > 0){
     int sensorValue = analogRead(analogPin); // Read voltage from analog pin
