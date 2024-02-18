@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #define SPEAKER_PIN 19  // Pin connected to the speaker
 #define LASER_SENSOR_PIN 36 // Pin connected to the laser sensor
-#define GAME_MODE_PIN 13  // Pin connected to the game mode switch
+#define GAME_MODE_PIN 12  // Pin connected to the game mode switch
 #define TRIGGER_PIN 14  // Pin connected to the trigger
 #define LASER_PIN 27  // Pin connected to the laser 
 
