@@ -85,7 +85,6 @@ void setup() {
 }
  
 void loop() {
-  getReadings();
  
   // Set values to send
   msgSend.hit = false;
