@@ -301,9 +301,10 @@ void hit_routine(){
   //ALL WHITE
   display.fillScreen(WHITE);
   display.display();
-  tone(SPEAKER_PIN,500, 500);
-  delay(100);
+  tone(SPEAKER_PIN,500, 200);
+  delay(50);
   noTone(SPEAKER_PIN);
+  delay(100);
   }
 
   //COUNT DOWN FROM 8
@@ -315,9 +316,12 @@ void hit_routine(){
     display.cp437(true);         // Use full 256 char 'Code Page 437' font
     display.println(i);
     display.display();
-    tone(SPEAKER_PIN, 200, 500);
+    tone(SPEAKER_PIN, i*100, 200);
+    delay(50);
+    noTone(SPEAKER_PIN);
     delay(1000);
   }
+
 
   //Last 3
   for (int i = 3; i > 0; i--){
@@ -362,7 +366,7 @@ void displayFinalScore(){
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
-  display.println("Final Score " + String(points));
+  display.println("FinalScore " + String(points));
   display.display();
 
 }
