@@ -140,10 +140,7 @@ void shootNoise(){
 }
 
 void gameOverNoise(){
-  tone(SPEAKER_PIN, 1000);
-  delay(2000);
-  tone(SPEAKER_PIN, 1000);
-  delay(2000);
+  tone(SPEAKER_PIN, 1000, 5000);
 }
 
 void displayLives(){
