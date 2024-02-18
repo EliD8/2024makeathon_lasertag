@@ -44,6 +44,7 @@ static const unsigned char PROGMEM logo_bmp[] =
 const int analogPin = LASER_SENSOR_PIN; // Analog pin to read from
 const int thresholdValue = 2; // Specified threshold value
 unsigned long previousMillis = 0; // will store last time LED was updated
+unsigned long previousMillis_Trigger = 0; // will store last time trigger was used
 const long interval = 400;
 bool triggerActive = false;
 const int hitCooldown = 1000;
@@ -92,6 +93,7 @@ void gameMode1(){
     int sensorValue = analogRead(analogPin); // Read voltage from analog pin
     float voltage = sensorValue * (3.3 / 1023.0); //True voltage
     unsigned long currentMillis = millis();
+    unsigned long currentMillis_Trigger = millis();
     
     // Check if sensor value exceeds the threshold and you can be hit
     if (voltage >= thresholdValue && currentMillis - previousMillis >= hitCooldown) {
@@ -111,12 +113,12 @@ void gameMode1(){
         Serial.println("FIRE!");
         shootNoise();
         digitalWrite(LASER_PIN, HIGH);
-        previousMillis = currentMillis;
-      } else if (triggerActive && currentMillis - previousMillis >= interval){
+        previousMillis_Trigger = currentMillis_Trigger;
+      } else if (triggerActive && currentMillis_Trigger - previousMillis_Trigger >= interval){
         triggerActive = false;
         digitalWrite(LASER_PIN, LOW);
       }
-    } else if (triggerActive && currentMillis - previousMillis >= interval){
+    } else if (triggerActive && currentMillis_Trigger - previousMillis_Trigger >= interval){
       triggerActive = false;
       digitalWrite(LASER_PIN, LOW);
     }
