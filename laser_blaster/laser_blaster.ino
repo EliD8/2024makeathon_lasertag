@@ -116,7 +116,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     msgSend.hit = true;
     esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msgSend, sizeof(msgSend));
     beenHit = 0;
-  } else if {
+  } else if (hitRecv) {
     points += 10;
   }
 }
@@ -134,6 +134,8 @@ void setup() {
   display.display();
   delay(2000); // Pause for 2 seconds
 
+  display.setRotation(1);
+
   // Clear the buffer
   display.clearDisplay();  
 
@@ -141,10 +143,11 @@ void setup() {
   pinMode(SPEAKER_PIN, OUTPUT); // Set the speaker pin as an output
   pinMode(GAME_MODE_PIN, INPUT_PULLUP); // Set the game mode pin as an input with pull-up resistor
   pinMode(TRIGGER_PIN, INPUT_PULLUP); // Set the trigger pin as an input
+  delay(50);
   int switchState = digitalRead(GAME_MODE_PIN); // Read the state of the game mode switch
   if (switchState == HIGH) {
-    Serial.println("Game Mode 2");
-    gameMode2();
+    Serial.println("Game Mode 1");
+    gameMode1();
   } else {
     Serial.println("Game Mode 2");
     gameMode2();
@@ -207,7 +210,7 @@ void gameMode2(){
   int currentMillis_Timer = millis();
   int previousMillis_Timer = millis();
 
-  while(minutes * 6000 > (millis() - countdownStart)){
+  while(minutes * 60000 > (millis() - countdownStart)){
     //Dislpay game countdown and points
     currentMillis_Timer = millis();
     if (currentMillis_Timer - previousMillis_Timer >= 1000){
@@ -287,7 +290,7 @@ void hit_routine(){
   //HIT HIT HITfor 2seconds
   for (int i = 10; i > 0; i--){
     display.clearDisplay();
-  display.setTextSize(5); 
+  display.setTextSize(4); 
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
@@ -332,32 +335,34 @@ void hit_routine(){
 
 void displayLives(){
   display.clearDisplay();
-  display.setTextSize(4);      // Normal 1:1 pixel scale
+  display.setTextSize(2);      // Normal 1:1 pixel scale
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
-  display.println("Lives: " + String(lives));
+  display.println("Lives");
+  display.setTextSize(4); 
+  display.println(String(lives));
   display.display();
 }
 
 void displayTimeAndScore(){
   display.clearDisplay();
-  display.setTextSize(4);      // Normal 1:1 pixel scale
+  display.setTextSize(2);      // Normal 1:1 pixel scale
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
-  display.println("Time: " + String(timeRemaining));
-  display.println("Score: " + String(points));
+  display.println("Time  " + String(timeRemaining));
+  display.println("Score  " + String(points));
   display.display();
 }
 
 void displayFinalScore(){
   display.clearDisplay();
-  display.setTextSize(4);      // Normal 1:1 pixel scale
+  display.setTextSize(2);      // Normal 1:1 pixel scale
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
-  display.println("Final Score: " + String(points));
+  display.println("Final Score " + String(points));
   display.display();
 
 }
