@@ -290,7 +290,7 @@ void hit_routine(){
   //HIT HIT HITfor 2seconds
   for (int i = 10; i > 0; i--){
     display.clearDisplay();
-  display.setTextSize(4); 
+  display.setTextSize(3); 
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
