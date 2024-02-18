@@ -112,10 +112,10 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   hitRecv = msgRecv.hit;
 
   if (!hitRecv && beenHit){
+    beenHit = 0;
     // Set values to send
     msgSend.hit = true;
     esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msgSend, sizeof(msgSend));
-    beenHit = 0;
   } else if (hitRecv) {
     points += 10;
   }
@@ -204,7 +204,7 @@ void gameMode1(){
 
 
 void gameMode2(){
-  int minutes = 1;
+  int minutes = 2;
   int countdownStart = millis();
   int prevTrigState = digitalRead(TRIGGER_PIN);
   int currentMillis_Timer = millis();
@@ -226,13 +226,13 @@ void gameMode2(){
     
     // Check if sensor value exceeds the threshold and you can be hit
     if (voltage >= thresholdValue && currentMillis - previousMillis >= hitCooldown) {
-      beenHit = 1;
       previousMillis = currentMillis;
       Serial.println("Hit!"); // Print a message indicating threshold reached
       Serial.println(sensorValue);
       Serial.println(voltage);
       hit_routine(); //stun for 5s
       hitNoise();
+      beenHit = 1;
     }
 
     //Check if we're firing 
