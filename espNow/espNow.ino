@@ -1,6 +1,12 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
+//YELLOW ESP MAC Address
+// {0xC8, 0xF0, 0x9E, 0x27, 0x53, 0x4C}; 
+
+//BLACK ESP MAC Address
+
+
 // REPLACE WITH THE MAC Address of your receiver 
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
