@@ -149,5 +149,6 @@ void displayLives(){
   display.setTextColor(WHITE); // Draw white text
   display.setCursor(0,0);     // Start at top-left corner
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
-  display.write("Lives: " + String(lives));
+  display.println("Lives: " + String(lives));
+  display.display();
 }
