@@ -34,10 +34,12 @@ static const unsigned char PROGMEM logo_bmp[] =
   B00000000, B00110000 };
 //******************************
 
-#define SPEAKER_PIN 8  // Pin connected to the speaker
-#define LASER_SENSOR_PIN A0  // Pin connected to the laser sensor
-#define GAME_MODE_PIN 2  // Pin connected to the game mode switch
-#define TRIGGER_PIN 13  // Pin connected to the laser
+#include <Arduino.h>
+#define SPEAKER_PIN 39  // Pin connected to the speaker
+#define LASER_SENSOR_PIN 36 // Pin connected to the laser sensor
+#define GAME_MODE_PIN 13  // Pin connected to the game mode switch
+#define TRIGGER_PIN 14  // Pin connected to the trigger
+#define LASER_PIN 36  // Pin connected to the laser 
 
 const int analogPin = LASER_SENSOR_PIN; // Analog pin to read from
 const int thresholdValue = 2; // Specified threshold value
@@ -49,7 +51,23 @@ int lives = 5;
 
 
 void setup() {
-  Serial.begin(9600); // Initialize serial communication at 9600 baud rate
+  Serial.begin(115200); // Initialize serial communication at 9600 baud rate
+
+  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  // Show initial display buffer contents on the screen --
+  // the library initializes this with an Adafruit splash screen.
+  display.display();
+  delay(2000); // Pause for 2 seconds
+
+  // Clear the buffer
+  display.clearDisplay();  
+
+  pinMode(LASER_PIN, OUTPUT); // Set the laser pin as an output
   pinMode(SPEAKER_PIN, OUTPUT); // Set the speaker pin as an output
   pinMode(GAME_MODE_PIN, INPUT_PULLUP); // Set the game mode pin as an input with pull-up resistor
   pinMode(TRIGGER_PIN, INPUT_PULLUP); // Set the trigger pin as an input
@@ -58,11 +76,13 @@ void setup() {
     Serial.println("Game Mode 1");
     gameMode1();
   } else {
-    Serial.println("Game Mode 2");
-    //gameMode2();
+    Serial.println("Game Mode 1");
+    gameMode1();
   }
 }
-
+void loop(){
+  //
+}
 void gameMode1(){
   int prevTrigState = digitalRead(TRIGGER_PIN);
   while(lives > 0){
@@ -77,6 +97,21 @@ void gameMode1(){
       hitNoise();
       lives--;
       Serial.println("Lives: " + String(lives));
+      displayLives();
+    }
+
+    int trigState = digitalRead(TRIGGER_PIN);
+    if (trigState != prevTrigState){
+      prevTrigState = trigState;
+      if (trigState == HIGH){
+        Serial.println("FIRE!");
+        shootNoise();
+        digitalWrite(LASER_PIN, HIGH);
+      } else{
+        digitalWrite(LASER_PIN, LOW);
+      }
+    } else{
+      digitalWrite(LASER_PIN, LOW);
     }
 
   }
@@ -91,11 +126,12 @@ void gameMode1(){
 //}
 
 void hitNoise(){
-  tone(SPEAKER_PIN, 1000);
-  delay(500);
-  tone(SPEAKER_PIN, 700);
-  delay(200);
-  noTone(SPEAKER_PIN);
+  tone(SPEAKER_PIN, 1000, 500); // Play tone at 1000 Hz for 500 ms
+  tone(SPEAKER_PIN, 700, 200); // Play tone at 700 Hz for 200 ms
+}
+
+void shootNoise(){
+  tone(SPEAKER_PIN, 800, 200);
 }
 
 void gameOverNoise(){
@@ -103,5 +139,14 @@ void gameOverNoise(){
   delay(2000);
   tone(SPEAKER_PIN, 1000);
   delay(2000);
+}
+
+void displayLives(){
+  display.clearDisplay();
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0,0);     // Start at top-left corner
+  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+  display.write("Lives: " + String(lives));
 }
 ```
